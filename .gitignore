@@ -1,0 +1,9 @@
+/build/
+/nbproject/private/
+/eclipse/
+/target/
+/.gradle/
+/.idea/
+/out/
+/.settings/
+*.log
