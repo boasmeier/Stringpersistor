@@ -5,21 +5,49 @@
  */
 package ch.hslu.vsk.stringpersistor.impl;
 
+import java.io.File;
+import java.time.Instant;
 import nl.jqno.equalsverifier.EqualsVerifier;
+import nl.jqno.equalsverifier.Warning;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import org.junit.jupiter.api.Test;
 
 /**
+ * Tests all the methods of class StringPersistorFile.
  *
  * @author boasm
  */
 public class StringPersistorFileTest {
 
     /**
-     * Test of equals and hashcode methods, of class Person.
+     * Test of setFile() method, of class StrinPersistorFile.
+     */
+    @Test
+    public void testSetFile() {
+        StringPersistorFile spf = new StringPersistorFile();
+        File file = new File("C:\\BoasMeier\\spfTest.txt");
+        spf.setFile(file);
+        assertEquals("C:\\BoasMeier\\spfTest.txt", spf.getFile().getAbsolutePath());
+    }
+
+    /**
+     * Test of save() method, of class StrinPersistorFile.
+     */
+    @Test
+    public void testSave() {
+        StringPersistorFile spf = new StringPersistorFile();
+        File file = new File("C:\\BoasMeier\\spfTest.txt");
+        spf.setFile(file);
+        spf.save(Instant.now(), "Test Payload");
+        assertEquals("Test Payload", spf.get(1).get(0).getPayload());
+    }
+
+    /**
+     * Test of equals and hashcode methods, of class StrinPersistorFile.
      */
     @Test
     public void testEqualsWithVerifier() {
-        EqualsVerifier.forClass(StringPersistorFile.class).verify();
+        EqualsVerifier.forClass(StringPersistorFile.class).suppress(Warning.NONFINAL_FIELDS).verify();
     }
 
 }

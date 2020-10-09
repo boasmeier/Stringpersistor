@@ -7,45 +7,80 @@ package ch.hslu.vsk.stringpersistor.impl;
 
 import ch.hslu.vsk.stringpersistor.api.PersistedString;
 import ch.hslu.vsk.stringpersistor.api.StringPersistor;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
 /**
- * {Class description here}.
+ * Persists strings with a timestamp into a file using a FileWriter. It also reads out those Files and returns the
+ * persisted strings in form of a list which stores objects from of class PersistedString.
  *
  * @author Boas Meier
  * @version JDK 12.0.2
  */
-public class StringPersistorFile implements StringPersistor {
+public final class StringPersistorFile implements StringPersistor {
 
     private File file;
 
-    @Override
-    public void setFile(File file) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public final File getFile() {
+        return this.file;
     }
 
     @Override
-    public void save(Instant timestamp, String payload) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public final void setFile(final File file) {
+        this.file = file;
+        try {
+            if (this.file.createNewFile()) {
+                System.out.println("File created: " + this.file.getName());
+            } else {
+                System.out.println("File already exists.");
+            }
+        } catch (IOException e) {
+            System.out.println("An error occurred: " + e.getMessage());
+        }
     }
 
     @Override
-    public List<PersistedString> get(int count) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public final void save(final Instant timestamp, final String payload) {
+        try (BufferedWriter buffer = new BufferedWriter(new FileWriter(this.file, true))) {
+            buffer.write(timestamp.toString() + " | " + payload);
+            buffer.newLine();
+        } catch (IOException ex) {
+            System.out.println("An error occurred while writing: " + ex.getMessage());
+        }
     }
 
     @Override
-    public int hashCode() {
+    public final List<PersistedString> get(final int count) {
+        List<PersistedString> list = new ArrayList<>();
+        try (BufferedReader buffer = new BufferedReader(new FileReader(this.file))) {
+            for (int i = 0; i < count; i++) {
+                String[] s;
+                s = buffer.readLine().split(" \\| ");
+                list.add(new PersistedString(Instant.parse(s[0]), s[1]));
+            }
+        } catch (IOException ex) {
+            System.out.println("An error occurred while reading: " + ex.getMessage());
+        }
+        return list;
+    }
+
+    @Override
+    public final int hashCode() {
         int hash = 5;
         hash = 59 * hash + Objects.hashCode(this.file);
         return hash;
     }
 
     @Override
-    public boolean equals(Object obj) {
+    public final boolean equals(Object obj) {
         if (this == obj) {
             return true;
         }
@@ -63,7 +98,7 @@ public class StringPersistorFile implements StringPersistor {
     }
 
     @Override
-    public String toString() {
+    public final String toString() {
         return "StringPersistorFile{" + "file=" + file + '}';
     }
 }
