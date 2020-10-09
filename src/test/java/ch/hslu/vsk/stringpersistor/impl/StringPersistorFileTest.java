@@ -5,10 +5,7 @@
  */
 package ch.hslu.vsk.stringpersistor.impl;
 
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.BeforeAll;
+import nl.jqno.equalsverifier.EqualsVerifier;
 import org.junit.jupiter.api.Test;
 
 /**
@@ -17,47 +14,12 @@ import org.junit.jupiter.api.Test;
  */
 public class StringPersistorFileTest {
 
-    public StringPersistorFileTest() {
-    }
-
-    @BeforeAll
-    public static void setUpClass() {
-    }
-
-    @AfterAll
-    public static void tearDownClass() {
-    }
-
-    @BeforeEach
-    public void setUp() {
-    }
-
-    @AfterEach
-    public void tearDown() {
-    }
-
     /**
-     * Test of setFile method, of class StringPersistorFile.
+     * Test of equals and hashcode methods, of class Person.
      */
     @Test
-    public void testSetFile() {
-
-    }
-
-    /**
-     * Test of save method, of class StringPersistorFile.
-     */
-    @Test
-    public void testSave() {
-
-    }
-
-    /**
-     * Test of get method, of class StringPersistorFile.
-     */
-    @Test
-    public void testGet() {
-
+    public void testEqualsWithVerifier() {
+        EqualsVerifier.forClass(StringPersistorFile.class).verify();
     }
 
 }

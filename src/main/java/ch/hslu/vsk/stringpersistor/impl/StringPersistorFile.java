@@ -5,9 +5,12 @@
  */
 package ch.hslu.vsk.stringpersistor.impl;
 
+import ch.hslu.vsk.stringpersistor.api.PersistedString;
+import ch.hslu.vsk.stringpersistor.api.StringPersistor;
 import java.io.File;
 import java.time.Instant;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * {Class description here}.
@@ -16,6 +19,8 @@ import java.util.List;
  * @version JDK 12.0.2
  */
 public class StringPersistorFile implements StringPersistor {
+
+    private File file;
 
     @Override
     public void setFile(File file) {
@@ -32,4 +37,33 @@ public class StringPersistorFile implements StringPersistor {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
+    @Override
+    public int hashCode() {
+        int hash = 5;
+        hash = 59 * hash + Objects.hashCode(this.file);
+        return hash;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final StringPersistorFile other = (StringPersistorFile) obj;
+        if (!Objects.equals(this.file, other.file)) {
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public String toString() {
+        return "StringPersistorFile{" + "file=" + file + '}';
+    }
 }
