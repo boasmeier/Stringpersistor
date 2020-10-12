@@ -1,7 +1,10 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+/**
+ * StringPersistorFile.java
+ * Created on 05.10.2020
+ *
+ * Copyright(c) 2020 Boas Meier.
+ * This software is the proprietary information of Boas Meier.
+ *
  */
 package ch.hslu.vsk.stringpersistor.impl;
 
@@ -35,7 +38,11 @@ public final class StringPersistorFile implements StringPersistor {
 
     @Override
     public final void setFile(final File file) {
+        if (file == null || file.getPath().equals("")) {
+            throw new IllegalStateException("Cannot set file without a path.");
+        }
         this.file = file;
+
         try {
             if (this.file.createNewFile()) {
                 System.out.println("File created: " + this.file.getName());
@@ -43,7 +50,7 @@ public final class StringPersistorFile implements StringPersistor {
                 System.out.println("File already exists.");
             }
         } catch (IOException e) {
-            System.out.println("An error occurred: " + e.getMessage());
+            System.out.println("An error occurred while set file: " + e.getMessage());
         }
     }
 
@@ -66,17 +73,15 @@ public final class StringPersistorFile implements StringPersistor {
                 s = buffer.readLine().split(" \\| ");
                 list.add(new PersistedString(Instant.parse(s[0]), s[1]));
             }
-        } catch (IOException ex) {
-            System.out.println("An error occurred while reading: " + ex.getMessage());
+        } catch (IOException e) {
+            System.out.println("An error occurred while reading: " + e.getMessage());
         }
         return list;
     }
 
     @Override
     public final int hashCode() {
-        int hash = 5;
-        hash = 59 * hash + Objects.hashCode(this.file);
-        return hash;
+        return Objects.hash(this.file);
     }
 
     @Override
@@ -91,10 +96,7 @@ public final class StringPersistorFile implements StringPersistor {
             return false;
         }
         final StringPersistorFile other = (StringPersistorFile) obj;
-        if (!Objects.equals(this.file, other.file)) {
-            return false;
-        }
-        return true;
+        return Objects.equals(this.file, other.getFile());
     }
 
     @Override
