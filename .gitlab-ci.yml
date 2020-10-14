@@ -13,7 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
- 
+
 image: maven:3.6.3-jdk-11
 
 variables:
@@ -32,9 +32,9 @@ stages:
 build:
   stage: build
   script:
-    - mvn $MAVEN_CLI_OPTS clean install
+    - mvn $MAVEN_CLI_OPTS clean install $MAVEN_OPTS
 
 site:
   stage: site
   script:
-    - mvn $MAVEN_CLI_OPTS site
+    - mvn $MAVEN_CLI_OPTS site $MAVEN_OPTS
