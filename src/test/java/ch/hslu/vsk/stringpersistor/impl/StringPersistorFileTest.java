@@ -38,13 +38,13 @@ public class StringPersistorFileTest {
      * Test of setFile() method, of class StrinPersistorFile.
      */
     @Test
-    public void testSetFileException() {
+    public void testSetFileEmptyPath() {
         StringPersistorFile spf = new StringPersistorFile();
         File file = new File("");
         final Exception e = assertThrows(IllegalStateException.class, () -> {
             spf.setFile(file);
         });
-        assertEquals("Cannot set file without a path.", e.getMessage());
+        assertEquals("Can not set file without a path.", e.getMessage());
     }
 
     /**
@@ -57,7 +57,7 @@ public class StringPersistorFileTest {
         final Exception e = assertThrows(IllegalStateException.class, () -> {
             spf.setFile(file);
         });
-        assertEquals("Cannot set file without a path.", e.getMessage());
+        assertEquals("Can not set file without a path.", e.getMessage());
     }
 
     /**
@@ -70,6 +70,36 @@ public class StringPersistorFileTest {
         spf.setFile(file);
         spf.save(Instant.now(), "Test Payload");
         assertEquals("Test Payload", spf.get(1).get(0).getPayload());
+    }
+
+    /**
+     * Test of get(int count) method, of class StrinPersistorFile.
+     */
+    @Test
+    public void testGet() {
+        StringPersistorFile spf = new StringPersistorFile();
+        File file = new File(".\\spfTest.txt");
+        spf.setFile(file);
+        for (int i = 0; i < 10; i++) {
+            spf.save(Instant.now(), "Test Payload " + i);
+        }
+        assertEquals("Test Payload 9", spf.get(5).get(0).getPayload());
+        assertEquals("Test Payload 8", spf.get(5).get(1).getPayload());
+        assertEquals("Test Payload 7", spf.get(5).get(2).getPayload());
+        assertEquals("Test Payload 6", spf.get(5).get(3).getPayload());
+        assertEquals("Test Payload 5", spf.get(5).get(4).getPayload());
+    }
+
+    /**
+     * Test of get(int count) method, of class StrinPersistorFile.
+     */
+    @Test
+    public void testGetWhenFileNull() {
+        StringPersistorFile spf = new StringPersistorFile();
+        final Exception e = assertThrows(NullPointerException.class, () -> {
+            spf.get(1);
+        });
+        assertEquals("File is not set.", e.getMessage());
     }
 
     /**

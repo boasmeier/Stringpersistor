@@ -10,12 +10,11 @@ package ch.hslu.vsk.stringpersistor.impl;
 
 import ch.hslu.vsk.stringpersistor.api.PersistedString;
 import ch.hslu.vsk.stringpersistor.api.StringPersistor;
-import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.RandomAccessFile;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
@@ -39,7 +38,7 @@ public final class StringPersistorFile implements StringPersistor {
     @Override
     public final void setFile(final File file) {
         if (file == null || file.getPath().equals("")) {
-            throw new IllegalStateException("Cannot set file without a path.");
+            throw new IllegalStateException("Can not set file without a path.");
         }
         this.file = file;
 
@@ -66,12 +65,32 @@ public final class StringPersistorFile implements StringPersistor {
 
     @Override
     public final List<PersistedString> get(final int count) {
+
+        if (this.file == null) {
+            throw new NullPointerException("File is not set.");
+        }
+
         List<PersistedString> list = new ArrayList<>();
-        try (BufferedReader buffer = new BufferedReader(new FileReader(this.file))) {
-            for (int i = 0; i < count; i++) {
-                String[] s;
-                s = buffer.readLine().split(" \\| ");
-                list.add(new PersistedString(Instant.parse(s[0]), s[1]));
+        int lineCounter = 0;
+        StringBuilder builder = new StringBuilder();
+        try (RandomAccessFile raf = new RandomAccessFile(this.file, "r")) {
+            long fileLength = file.length() - 2;
+            for (long i = fileLength; i >= 0; i--) {
+                raf.seek(i);
+                char c = (char) raf.read();
+                if (c == '\n') {
+                    lineCounter++;
+                    builder.reverse();
+                    String[] s = builder.toString().split(" \\| ");
+                    list.add(new PersistedString(Instant.parse(s[0]), s[1]));
+                    builder = new StringBuilder();
+                    if (lineCounter >= count) {
+                        break;
+                    }
+                }
+                if (c != '\n' && c != '\r') {
+                    builder.append(c);
+                }
             }
         } catch (IOException e) {
             System.out.println("An error occurred while reading: " + e.getMessage());
@@ -101,6 +120,6 @@ public final class StringPersistorFile implements StringPersistor {
 
     @Override
     public final String toString() {
-        return "StringPersistorFile{" + "file=" + file + '}';
+        return "StringPersistorFile{" + "file=" + this.file + '}';
     }
 }
