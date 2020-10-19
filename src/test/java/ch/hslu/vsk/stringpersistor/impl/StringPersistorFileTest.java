@@ -31,7 +31,7 @@ public class StringPersistorFileTest {
         StringPersistorFile spf = new StringPersistorFile();
         File file = new File(".\\spfTest.log");
         spf.setFile(file);
-        assertEquals(".\\spfTest.txt", spf.getFile().getPath());
+        assertEquals(".\\spfTest.log", spf.getFile().getPath());
     }
 
     /**
