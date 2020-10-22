@@ -9,3 +9,4 @@
 *.log
 /nbproject/
 spfTest.txt
+*.iml
