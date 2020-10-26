@@ -10,3 +10,5 @@
 /nbproject/
 spfTest.txt
 *.iml
+.classpath
+.project

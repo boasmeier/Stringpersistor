@@ -19,6 +19,7 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.logging.Logger;
 
 /**
  * Persists strings with a timestamp into a file using a FileWriter. It also reads out those Files and returns the
@@ -28,6 +29,7 @@ import java.util.Objects;
  * @version JDK 12.0.2
  */
 public final class StringPersistorFile implements StringPersistor {
+    private static final Logger LOGGER = Logger.getLogger(StringPersistorFile.class.getName());
 
     private File file;
 
@@ -44,12 +46,12 @@ public final class StringPersistorFile implements StringPersistor {
 
         try {
             if (this.file.createNewFile()) {
-                System.out.println("File created: " + this.file.getName());
+                LOGGER.info("File created: " + this.file.getName());
             } else {
-                System.out.println("File already exists.");
+                LOGGER.info("File already exists.");
             }
         } catch (IOException e) {
-            System.out.println("An error occurred while set file: " + e.getMessage());
+            LOGGER.severe("An error occurred while set file: " + e.getMessage());
         }
     }
 
@@ -69,33 +71,38 @@ public final class StringPersistorFile implements StringPersistor {
         if (this.file == null) {
             throw new NullPointerException("File is not set.");
         }
-
-        List<PersistedString> list = new ArrayList<>();
-        int lineCounter = 0;
-        StringBuilder builder = new StringBuilder();
         try (RandomAccessFile raf = new RandomAccessFile(this.file, "r")) {
-            long fileLength = file.length() - 2;
-            for (long i = fileLength; i >= 0; i--) {
-                raf.seek(i);
-                char c = (char) raf.read();
-                if (c == '\n') {
-                    lineCounter++;
-                    builder.reverse();
-                    String[] s = builder.toString().split(" \\| ");
-                    list.add(new PersistedString(Instant.parse(s[0]), s[1]));
-                    builder = new StringBuilder();
-                    if (lineCounter >= count) {
-                        break;
-                    }
-                }
-                if (c != '\n' && c != '\r') {
-                    builder.append(c);
+            return readLines(count, raf);
+        } catch (IOException e) {
+            LOGGER.severe("An error occurred while reading: " + e.getMessage());
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    private List<PersistedString> readLines(final int count, RandomAccessFile raf) throws IOException {
+        List<PersistedString> list = new ArrayList<>();
+        StringBuilder builder = new StringBuilder();
+        long fileLength = file.length() - 2;
+
+        for (long i = fileLength; i >= 0; i--) {
+            raf.seek(i);
+            char c = (char) raf.read();
+            if (c == '\n') {
+                builder.reverse();
+                String[] s = builder.toString().split(" \\| ");
+                list.add(new PersistedString(Instant.parse(s[0]), s[1]));
+                builder.setLength(0);
+                if (list.size() >= count) {
+                    return list;
                 }
             }
-        } catch (IOException e) {
-            System.out.println("An error occurred while reading: " + e.getMessage());
+            if (c != '\n' && c != '\r') {
+                builder.append(c);
+            }
         }
-        return list;
+
+        return new ArrayList<>();
     }
 
     @Override

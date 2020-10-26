@@ -24,7 +24,7 @@ import org.junit.jupiter.api.Test;
 public class StringPersistorFileTest {
 
     /**
-     * Test of setFile() method, of class StrinPersistorFile.
+     * Test of setFile() method, of class StringPersistorFile.
      */
     @Test
     public void testSetFile() {
