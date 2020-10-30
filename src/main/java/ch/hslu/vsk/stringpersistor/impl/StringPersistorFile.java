@@ -67,7 +67,6 @@ public final class StringPersistorFile implements StringPersistor {
 
     @Override
     public final List<PersistedString> get(final int count) {
-
         if (this.file == null) {
             throw new NullPointerException("File is not set.");
         }

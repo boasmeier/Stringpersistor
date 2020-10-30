@@ -12,3 +12,4 @@ spfTest.txt
 *.iml
 .classpath
 .project
+.vscode
