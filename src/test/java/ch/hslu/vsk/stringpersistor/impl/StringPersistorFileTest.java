@@ -11,6 +11,7 @@ import java.io.File;
 import java.time.Instant;
 import nl.jqno.equalsverifier.EqualsVerifier;
 import nl.jqno.equalsverifier.Warning;
+import org.junit.jupiter.api.AfterAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import org.junit.jupiter.api.Test;
@@ -23,15 +24,21 @@ import org.junit.jupiter.api.Test;
  */
 public class StringPersistorFileTest {
 
+    @AfterAll
+    public static void tearDown() {
+        File file = new File("." + File.separator + "tmp_spfTest.log");
+        file.delete();
+    }
+
     /**
      * Test of setFile() method, of class StringPersistorFile.
      */
     @Test
     public void testSetFile() {
         StringPersistorFile spf = new StringPersistorFile();
-        File file = new File("." + File.separator + "spfTest.log");
+        File file = new File("." + File.separator + "tmp_spfTest.log");
         spf.setFile(file);
-        assertEquals("." + File.separator + "spfTest.log", spf.getFile().getPath());
+        assertEquals("." + File.separator + "tmp_spfTest.log", spf.getFile().getPath());
     }
 
     /**
@@ -66,7 +73,7 @@ public class StringPersistorFileTest {
     @Test
     public void testSave() {
         StringPersistorFile spf = new StringPersistorFile();
-        File file = new File("." + File.separator + "spfTest.log");
+        File file = new File("." + File.separator + "tmp_spfTest.log");
         spf.setFile(file);
         spf.save(Instant.now(), "Test Payload");
         assertEquals("Test Payload", spf.get(1).get(0).getPayload());
@@ -78,7 +85,7 @@ public class StringPersistorFileTest {
     @Test
     public void testGet() {
         StringPersistorFile spf = new StringPersistorFile();
-        File file = new File("." + File.separator + "spfTest.log");
+        File file = new File("." + File.separator + "tmp_spfTest.log");
         spf.setFile(file);
         for (int i = 0; i < 10; i++) {
             spf.save(Instant.now(), "Test Payload " + i);
