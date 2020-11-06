@@ -22,13 +22,15 @@ import java.util.Objects;
 import java.util.logging.Logger;
 
 /**
- * Persists strings with a timestamp into a file using a FileWriter. It also reads out those Files and returns the
- * persisted strings in form of a list which stores objects from of class PersistedString.
+ * Persists strings with a timestamp into a file using a FileWriter. It also
+ * reads out those Files and returns the persisted strings in form of a list
+ * which stores objects from of class PersistedString.
  *
  * @author Boas Meier
  * @version JDK 12.0.2
  */
 public final class StringPersistorFile implements StringPersistor {
+
     private static final Logger LOGGER = Logger.getLogger(StringPersistorFile.class.getName());
 
     private File file;
@@ -57,7 +59,7 @@ public final class StringPersistorFile implements StringPersistor {
 
     @Override
     public final void save(final Instant timestamp, final String payload) {
-        try (BufferedWriter buffer = new BufferedWriter(new FileWriter(this.file, true))) {
+        try ( BufferedWriter buffer = new BufferedWriter(new FileWriter(this.file, true))) {
             buffer.write(timestamp.toString() + " | " + payload);
             buffer.newLine();
         } catch (IOException ex) {
@@ -70,7 +72,7 @@ public final class StringPersistorFile implements StringPersistor {
         if (this.file == null) {
             throw new NullPointerException("File is not set.");
         }
-        try (RandomAccessFile raf = new RandomAccessFile(this.file, "r")) {
+        try ( RandomAccessFile raf = new RandomAccessFile(this.file, "r")) {
             return readLines(count, raf);
         } catch (IOException e) {
             LOGGER.severe("An error occurred while reading: " + e.getMessage());
@@ -100,8 +102,14 @@ public final class StringPersistorFile implements StringPersistor {
                 builder.append(c);
             }
         }
+        if (count != 0) {
+            builder.reverse();
+            String[] s = builder.toString().split(" \\| ");
+            list.add(new PersistedString(Instant.parse(s[0]), s[1]));
+            builder.setLength(0);
+        }
 
-        return new ArrayList<>();
+        return list;
     }
 
     @Override
