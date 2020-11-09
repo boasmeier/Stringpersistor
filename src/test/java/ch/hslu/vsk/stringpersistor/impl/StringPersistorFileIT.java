@@ -39,6 +39,7 @@ public class StringPersistorFileIT {
      */
     @Test
     public void testSave1001Objects() {
+        new File(FILE_NAME_1).delete();
         int totalObjects = 1001;
         StringPersistor persistor = new StringPersistorFile();
         File file = new File(FILE_NAME_1);
@@ -46,7 +47,6 @@ public class StringPersistorFileIT {
         List<String> savedStrings = new ArrayList<>();
         for (int i = 1; i <= totalObjects; i++) {
             String value = "String: " + String.valueOf(i);
-            System.out.println("Saved: " + value);
             savedStrings.add(value);
             persistor.save(Instant.now(), value);
         }
@@ -64,24 +64,35 @@ public class StringPersistorFileIT {
      */
     @Test
     public void testGet100ObjectsIn200ms() {
+        new File(FILE_NAME_2).delete();
         int totalObjects = 100;
+        List<Long> messwerte = new ArrayList<>();
         StringPersistor persistor = new StringPersistorFile();
-        File file = new File(FILE_NAME_2);
-        persistor.setFile(file);
-        List<String> savedStrings = new ArrayList<>();
-        for (int i = 1; i <= totalObjects; i++) {
-            String value = "";
-            for (int x = 1; x <= 1000; x++){
-                value += i;
+        for (int m = 0; m < 20; m++) {
+            File file = new File(FILE_NAME_2);
+            persistor.setFile(file);
+            List<String> savedStrings = new ArrayList<>();
+            for (int i = 1; i <= totalObjects; i++) {
+                String value = "";
+                for (int x = 1; x <= 1000; x++) {
+                    value += i;
+                }
+                savedStrings.add(value);
+                persistor.save(Instant.now(), value);
             }
-            savedStrings.add(value);
-            persistor.save(Instant.now(), value);
+            List<PersistedString> allStrings;
+            long start = System.currentTimeMillis();
+            allStrings = persistor.get(100);
+            long finish = System.currentTimeMillis();
+            assertThat(allStrings.size()).isEqualTo(totalObjects);
+            new File(FILE_NAME_2).delete();
+            messwerte.add(finish - start);
         }
-        List<PersistedString> allStrings;
-        long start = System.currentTimeMillis();
-        allStrings = persistor.get(100);
-        long finish = System.currentTimeMillis();
-        assertThat(allStrings.size()).isEqualTo(totalObjects);
-        assertThat(finish-start).isLessThan(200);
+
+        long sum = 0L;
+        for (long me : messwerte) {
+            sum += me;
+        }
+        assertThat(sum / messwerte.size()).isLessThan(200);
     }
 }

@@ -100,6 +100,7 @@ public class StringPersistorFileTest {
         for (int i = 0; i < 10; i++) {
             spf.save(Instant.now(), "Test Payload " + i);
         }
+
         assertEquals("Test Payload 9", spf.get(5).get(0).getPayload());
         assertEquals("Test Payload 8", spf.get(5).get(1).getPayload());
         assertEquals("Test Payload 7", spf.get(5).get(2).getPayload());
