@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.Objects;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 /**
  * Persists strings with a timestamp into a file using a FileWriter. It also
@@ -84,11 +85,11 @@ public final class StringPersistorFile implements StringPersistor {
     }
 
     private List<PersistedString> readLines(final int count) throws IOException {
-        List<String> list = new ArrayList<>();
         List<PersistedString> persistedStrings = new ArrayList<>();
-        
-        new BufferedReader(new FileReader(this.file)).lines().forEach(line -> list.add(line));
-        ListIterator<String> listIterator = list.listIterator(list.size());
+        ListIterator<String> listIterator = new BufferedReader(new FileReader(this.file))
+                .lines()
+                .collect(Collectors.toList())
+                .listIterator();
         
         while (listIterator.hasPrevious()) {
             String[] s = listIterator.previous().split(" \\| ");
