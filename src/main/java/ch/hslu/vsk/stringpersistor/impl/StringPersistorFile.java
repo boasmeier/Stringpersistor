@@ -24,9 +24,8 @@ import java.util.Objects;
 import java.util.logging.Logger;
 
 /**
- * Persists strings with a timestamp into a file using a FileWriter. It also
- * reads out those Files and returns the persisted strings in form of a list
- * which stores objects from of class PersistedString.
+ * Persists strings with a timestamp into a file using a FileWriter. It also reads out those Files and returns the
+ * persisted strings in form of a list which stores objects from of class PersistedString.
  *
  * @author Boas Meier
  * @version JDK 12.0.2
@@ -61,7 +60,7 @@ public final class StringPersistorFile implements StringPersistor {
 
     @Override
     public final void save(final Instant timestamp, final String payload) {
-        try ( BufferedWriter buffer = new BufferedWriter(new FileWriter(this.file, true))) {
+        try (BufferedWriter buffer = new BufferedWriter(new FileWriter(this.file, true))) {
             buffer.write(timestamp.toString() + " | " + payload);
             buffer.newLine();
         } catch (IOException ex) {
@@ -87,18 +86,20 @@ public final class StringPersistorFile implements StringPersistor {
         List<String> list = new ArrayList<>();
         List<PersistedString> persistedStrings = new ArrayList<>();
 
-        new BufferedReader(new FileReader(this.file)).lines().forEach(line -> list.add(line));
+        BufferedReader br = new BufferedReader(new FileReader(this.file));
+        br.lines().forEach(line -> list.add(line));
         ListIterator<String> listIterator = list.listIterator(list.size());
-        
+
         while (listIterator.hasPrevious()) {
             String[] s = listIterator.previous().split(" \\| ");
             persistedStrings.add(new PersistedString(Instant.parse(s[0]), s[1]));
-            
+
             if (persistedStrings.size() >= count) {
                 return persistedStrings;
             }
         }
-        
+
+        br.close();
         return persistedStrings;
     }
 
