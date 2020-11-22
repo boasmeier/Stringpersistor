@@ -16,6 +16,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.charset.Charset;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
@@ -60,7 +61,7 @@ public final class StringPersistorFile implements StringPersistor {
 
     @Override
     public void save(final Instant timestamp, final String payload) {
-        try (BufferedWriter buffer = new BufferedWriter(new FileWriter(this.file, true))) {
+        try (BufferedWriter buffer = new BufferedWriter(new FileWriter(this.file, Charset.forName("UTF-8"), true))) {
             buffer.write(timestamp.toString() + " | " + payload);
             buffer.newLine();
         } catch (IOException ex) {
@@ -86,20 +87,19 @@ public final class StringPersistorFile implements StringPersistor {
         List<String> list = new ArrayList<>();
         List<PersistedString> persistedStrings = new ArrayList<>();
 
-        BufferedReader br = new BufferedReader(new FileReader(this.file));
-        br.lines().forEach(line -> list.add(line));
-        ListIterator<String> listIterator = list.listIterator(list.size());
+        try (BufferedReader br = new BufferedReader(new FileReader(this.file, Charset.forName("UTF-8")))) {
+            br.lines().forEach(line -> list.add(line));
+            ListIterator<String> listIterator = list.listIterator(list.size());
 
-        while (listIterator.hasPrevious()) {
-            String[] s = listIterator.previous().split(" \\| ");
-            persistedStrings.add(new PersistedString(Instant.parse(s[0]), s[1]));
+            while (listIterator.hasPrevious()) {
+                String[] s = listIterator.previous().split(" \\| ");
+                persistedStrings.add(new PersistedString(Instant.parse(s[0]), s[1]));
 
-            if (persistedStrings.size() >= count) {
-                return persistedStrings;
+                if (persistedStrings.size() >= count) {
+                    return persistedStrings;
+                }
             }
         }
-
-        br.close();
         return persistedStrings;
     }
 
