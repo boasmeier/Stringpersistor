@@ -37,7 +37,7 @@ public final class StringPersistorFile implements StringPersistor {
 
     private File file;
 
-    public final File getFile() {
+    public File getFile() {
         return this.file;
     }
 
