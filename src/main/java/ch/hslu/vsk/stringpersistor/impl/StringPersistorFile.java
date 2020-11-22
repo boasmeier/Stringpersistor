@@ -41,7 +41,7 @@ public final class StringPersistorFile implements StringPersistor {
     }
 
     @Override
-    public final void setFile(final File file) {
+    public void setFile(final File file) {
         if (file == null || file.getPath().equals("")) {
             throw new IllegalStateException("Can not set file without a path.");
         }
@@ -59,7 +59,7 @@ public final class StringPersistorFile implements StringPersistor {
     }
 
     @Override
-    public final void save(final Instant timestamp, final String payload) {
+    public void save(final Instant timestamp, final String payload) {
         try (BufferedWriter buffer = new BufferedWriter(new FileWriter(this.file, true))) {
             buffer.write(timestamp.toString() + " | " + payload);
             buffer.newLine();
@@ -69,7 +69,7 @@ public final class StringPersistorFile implements StringPersistor {
     }
 
     @Override
-    public final List<PersistedString> get(final int count) {
+    public List<PersistedString> get(final int count) {
         if (this.file == null) {
             throw new NullPointerException("File is not set.");
         }
@@ -104,12 +104,12 @@ public final class StringPersistorFile implements StringPersistor {
     }
 
     @Override
-    public final int hashCode() {
+    public int hashCode() {
         return Objects.hash(this.file);
     }
 
     @Override
-    public final boolean equals(Object obj) {
+    public boolean equals(final Object obj) {
         if (this == obj) {
             return true;
         }
@@ -124,7 +124,7 @@ public final class StringPersistorFile implements StringPersistor {
     }
 
     @Override
-    public final String toString() {
+    public String toString() {
         return "StringPersistorFile{" + "file=" + this.file + '}';
     }
 }
